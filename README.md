@@ -101,7 +101,7 @@ academia-ia-main/
    RESEND_API_KEY=tu_clave_de_resend
    EMAIL_FROM=soporte@uniestudiantes.online
    ADMIN_USER=admin
-   ADMIN_PASS=admin123
+   ADMIN_PASS=admin
    JWT_SECRET=tu_secreto_super_seguro
    MONGODB_URI=mongodb+srv://usuario:password@cluster.mongodb.net/academia?retryWrites=true&w=majority
    PUBLIC_URL=http://localhost:3000
@@ -125,5 +125,22 @@ El proyecto cuenta con las siguientes medidas de seguridad:
 - ✅ **Protección de Assets**: Frontend completamente aislado en la carpeta `public/` servida estáticamente.
 
 ---
+
+---
+
+## 🌐 Enlace a la Plataforma (Demo)
+
+Puedes acceder a la plataforma en vivo aquí:
+👉 **[https://uniestudiantes.online/](https://uniestudiantes.online/)**
+
+### Credenciales de Prueba (Estudiante)
+Para probar el portal del estudiante y ver los cursos sin tener que registrarte, usa este usuario:
+- **Usuario:** `demo`
+- **Contraseña:** `demo123`
+
+### Credenciales de Administrador
+Para probar el panel de control (aprobar y rechazar estudiantes):
+- **Usuario:** `admin`
+- **Contraseña:** `admin`
 
 *Última actualización: Mayo 2026*
