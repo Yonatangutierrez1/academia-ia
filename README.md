@@ -138,9 +138,4 @@ Para probar el portal del estudiante y ver los cursos sin tener que registrarte,
 - **Usuario:** `demo`
 - **Contraseña:** `demo123`
 
-### Credenciales de Administrador
-Para probar el panel de control (aprobar y rechazar estudiantes):
-- **Usuario:** `admin`
-- **Contraseña:** `admin`
-
 *Última actualización: Mayo 2026*
