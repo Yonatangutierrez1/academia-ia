@@ -138,4 +138,9 @@ Para probar el portal del estudiante y ver los cursos sin tener que registrarte,
 - **Usuario:** `demo`
 - **Contraseña:** `demo123`
 
+- ### Credenciales de Administrador
+
+- **Usuario:** `admin`
+- **Contraseña:** `admin123`
+
 *Última actualización: Mayo 2026*
