@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Academia IA — Inscríbete</title>
+  <meta name="description" content="Aprende Regresión Lineal y Algoritmos Genéticos con Academia IA. Inscríbete ahora." />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .landing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; max-width: 1200px; margin: 0 auto; padding: 2rem; align-items: start; position: relative; z-index: 10; }
+    .landing-left { padding-top: 2rem; }
+    .landing-right { background: rgba(15,23,42,0.7); backdrop-filter: blur(20px); border: 1px solid rgba(99,102,241,0.25); border-radius: 1.5rem; padding: 2.5rem; box-shadow: 0 25px 80px rgba(0,0,0,0.5); }
+    .hero-badge { display: inline-block; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.15em; color: var(--accent); background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.3); padding: 0.4rem 1rem; border-radius: 2rem; margin-bottom: 1.5rem; }
+    .hero-title { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 900; line-height: 1.05; color: #fff; margin-bottom: 1.25rem; }
+    .hero-title span { background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-sub { color: #94a3b8; font-size: 1.1rem; line-height: 1.7; margin-bottom: 2rem; }
+    .features-list { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 2.5rem; }
+    .feature-item { display: flex; align-items: center; gap: 0.75rem; color: #cbd5e1; font-size: 0.95rem; }
+    .feature-item::before { content: '✓'; color: #10b981; font-weight: 700; font-size: 1rem; flex-shrink: 0; }
+    .stats-row { display: flex; gap: 1.5rem; flex-wrap: wrap; padding: 1.5rem 0; border-top: 1px solid rgba(255,255,255,0.07); border-bottom: 1px solid rgba(255,255,255,0.07); margin-bottom: 2rem; }
+    .stat-item { text-align: center; }
+    .stat-item .val { font-size: 2rem; font-weight: 900; color: var(--accent); font-family: 'Share Tech Mono', monospace; }
+    .stat-item .lbl { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.05em; }
+    .course-cards { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem; }
+    .course-card { display: flex; align-items: center; gap: 1rem; background: rgba(30,41,59,0.5); border: 1px solid rgba(255,255,255,0.08); border-radius: 0.75rem; padding: 1rem 1.25rem; cursor: pointer; transition: all 0.2s; user-select: none; }
+    .course-card:hover { border-color: rgba(99,102,241,0.4); background: rgba(99,102,241,0.1); }
+    .course-card.selected { border-color: var(--accent); background: rgba(99,102,241,0.15); box-shadow: 0 0 0 1px rgba(99,102,241,0.3); }
+    .course-card input[type="checkbox"] { display: none; }
+    .course-card .check-circle { width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(99,102,241,0.5); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; }
+    .course-card.selected .check-circle { background: var(--accent); border-color: var(--accent); }
+    .course-card.selected .check-circle::after { content: '✓'; color: white; font-size: 0.7rem; font-weight: 700; }
+    .course-card .course-icon { font-size: 1.8rem; }
+    .course-card .course-info .name { font-weight: 600; color: var(--text); font-size: 0.95rem; }
+    .course-card .course-info .hours { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-title { font-size: 1.3rem; font-weight: 700; color: #fff; margin-bottom: 0.4rem; }
+    .form-subtitle { font-size: 0.85rem; color: var(--muted); margin-bottom: 1.75rem; }
+    .step-dots { display: flex; gap: 0.4rem; margin-bottom: 1.5rem; }
+    .step-dot { height: 3px; border-radius: 2px; flex: 1; background: rgba(255,255,255,0.1); transition: background 0.3s; }
+    .step-dot.active { background: var(--accent); }
+    .submit-btn { width: 100%; padding: 1rem; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; border: none; border-radius: 0.75rem; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.3s; letter-spacing: 0.03em; }
+    .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(99,102,241,0.4); }
+    .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .msg-inline { padding: 0.85rem 1.2rem; border-radius: 0.65rem; font-size: 0.88rem; margin-top: 1rem; display: none; }
+    .msg-inline.show { display: block; }
+    .msg-inline.success { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); color: #6ee7b7; }
+    .msg-inline.error { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
+    .msg-inline.warn { background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3); color: #fcd34d; }
+    @media (max-width: 900px) { .landing-grid { grid-template-columns: 1fr; } .form-row { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div style="position:fixed; top:1.5rem; right:1.5rem; z-index:50; display:flex; gap:0.75rem;">
+    <a href="login.html?type=student" class="btn-small" style="text-decoration:none; color:var(--muted);">Portal Estudiante</a>
+    <a href="login.html?type=admin" class="btn-small" style="text-decoration:none; color:var(--accent);">Admin ⌘</a>
+  </div>
+
+  <canvas id="neural"></canvas>
+
+  <div class="landing-grid">
+    <!-- LEFT: Hero -->
+    <div class="landing-left">
+      <div class="hero-badge">ACADEMIA IA · EDICIÓN 2026</div>
+      <h1 class="hero-title">Aprende <span>Inteligencia<br>Artificial</span> de Verdad</h1>
+      <p class="hero-sub">Cursos intensivos y prácticos. De la teoría al código, con demos interactivas, datos reales y evaluaciones prácticas.</p>
+
+      <div class="features-list">
+        <div class="feature-item">Contenido 100% práctico con datasets reales</div>
+        <div class="feature-item">Demos interactivas en el navegador</div>
+        <div class="feature-item">Evaluación final de conocimientos</div>
+        <div class="feature-item">Acceso inmediato al portal del estudiante</div>
+        <div class="feature-item">Soporte directo por correo electrónico</div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-item"><div class="val" id="counter-hours">0</div><div class="lbl">Horas de Clase</div></div>
+        <div class="stat-item"><div class="val" id="counter-projects">0</div><div class="lbl">Proyectos</div></div>
+        <div class="stat-item"><div class="val" id="counter-students">0</div><div class="lbl">Plazas Disponibles</div></div>
+      </div>
+
+      <p style="color:#475569; font-size:0.8rem;">© 2026 · Academia de Inteligencia Artificial ·
+        <a href="login.html?type=student" style="color:var(--accent); text-decoration:none;">acceso estudiantes</a>
+      </p>
+    </div>
+
+    <!-- RIGHT: Form -->
+    <div class="landing-right">
+      <div class="step-dots"><div class="step-dot active" id="dot1"></div><div class="step-dot" id="dot2"></div></div>
+      <div class="form-title">Inscripción al Curso</div>
+      <div class="form-subtitle">Selecciona el o los cursos de tu interés y completa tus datos.</div>
+
+      <form id="enroll-form">
+        <!-- Step 1: Course Selection -->
+        <div id="step-1">
+          <label style="font-size:0.78rem; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; display:block; margin-bottom:0.75rem;">Cursos Disponibles</label>
+          <div class="course-cards" id="courses-container">
+            <p style="color:var(--muted); font-size:0.9rem;">Cargando...</p>
+          </div>
+          <button type="button" id="btn-next" class="submit-btn" style="margin-top:0.5rem;">Continuar →</button>
+        </div>
+
+        <!-- Step 2: Personal Data -->
+        <div id="step-2" style="display:none;">
+          <div class="form-row" style="margin-bottom:1rem;">
+            <div class="form-group" style="margin-bottom:0;">
+              <label for="name">Nombre Completo</label>
+              <input type="text" id="name" required placeholder="Ej: Ada Lovelace" autocomplete="name">
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label for="email">Correo Electrónico</label>
+              <input type="email" id="email" required placeholder="ada@ejemplo.com" autocomplete="email">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="phone">Teléfono (opcional)</label>
+            <input type="tel" id="phone" placeholder="+1 555 000 0000" autocomplete="tel">
+          </div>
+          <div class="form-group">
+            <label for="level">Nivel de Experiencia en Programación</label>
+            <select id="level" required>
+              <option value="" disabled selected>Selecciona tu nivel...</option>
+              <option value="Principiante">🟢 Principiante — Sin conocimientos previos</option>
+              <option value="Intermedio">🟡 Intermedio — Conozco Python o algún lenguaje</option>
+              <option value="Avanzado">🔴 Avanzado — He trabajado con librerías de ML</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="motivation">¿Por qué quieres tomar este curso? <span style="color:var(--muted);">(opcional)</span></label>
+            <textarea id="motivation" placeholder="Cuéntanos brevemente tu motivación..." rows="3" style="resize:vertical; min-height:80px;"></textarea>
+          </div>
+          <div style="display:flex; gap:0.75rem;">
+            <button type="button" id="btn-back" class="btn-small" style="padding: 0.75rem 1.25rem; flex-shrink:0;">← Atrás</button>
+            <button type="submit" class="submit-btn" id="btn-submit">✦ Enviar Inscripción</button>
+          </div>
+        </div>
+      </form>
+
+      <div class="msg-inline" id="form-msg"></div>
+    </div>
+  </div>
+
+  <script src="js/common.js"></script>
+  <script>
+    // Counters
+    function animateCounter(el, target, suffix, duration = 1800) {
+      if (!el) return;
+      const start = performance.now();
+      function update(now) {
+        const t = Math.min((now - start) / duration, 1);
+        const ease = 1 - Math.pow(1 - t, 3);
+        el.textContent = Math.floor(ease * target) + suffix;
+        if (t < 1) requestAnimationFrame(update);
+      }
+      requestAnimationFrame(update);
+    }
+    setTimeout(() => {
+      animateCounter(document.getElementById('counter-hours'), 75, 'h');
+      animateCounter(document.getElementById('counter-projects'), 8, '');
+      animateCounter(document.getElementById('counter-students'), 20, '');
+    }, 600);
+
+    // Course selection
+    let globalCourses = [];
+    let selectedCourses = [];
+
+    async function fetchCourses() {
+      try {
+        const res = await fetch(`${API_BASE}/courses`);
+        globalCourses = await res.json();
+        const container = document.getElementById('courses-container');
+        container.innerHTML = '';
+        globalCourses.forEach(c => {
+          const card = document.createElement('label');
+          card.className = 'course-card';
+          card.innerHTML = `
+            <input type="checkbox" name="courses" value="${c.id}">
+            <div class="check-circle"></div>
+            <div class="course-icon">${c.icon}</div>
+            <div class="course-info">
+              <div class="name">${c.name}</div>
+              <div class="hours">${c.hours || '35'} horas · Certificado incluido</div>
+            </div>
+          `;
+          card.addEventListener('click', () => {
+            const cb = card.querySelector('input');
+            cb.checked = !cb.checked;
+            card.classList.toggle('selected', cb.checked);
+          });
+          container.appendChild(card);
+        });
+      } catch (err) {
+        console.error('Error:', err);
+      }
+    }
+    fetchCourses();
+
+    // Step navigation
+    document.getElementById('btn-next').addEventListener('click', () => {
+      const checked = document.querySelectorAll('input[name="courses"]:checked');
+      if (checked.length === 0) {
+        showMsg('Por favor selecciona al menos un curso.', 'warn');
+        return;
+      }
+      selectedCourses = Array.from(checked).map(cb => cb.value);
+      document.getElementById('step-1').style.display = 'none';
+      document.getElementById('step-2').style.display = 'block';
+      document.getElementById('dot1').classList.remove('active');
+      document.getElementById('dot2').classList.add('active');
+    });
+
+    document.getElementById('btn-back').addEventListener('click', () => {
+      document.getElementById('step-2').style.display = 'none';
+      document.getElementById('step-1').style.display = 'block';
+      document.getElementById('dot2').classList.remove('active');
+      document.getElementById('dot1').classList.add('active');
+    });
+
+    // Form submit
+    document.getElementById('enroll-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('btn-submit');
+      btn.disabled = true;
+      btn.textContent = 'Enviando...';
+
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const level = document.getElementById('level').value;
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, level, course: selectedCourses })
+        });
+        const data = await res.json();
+
+        if (res.status === 409) {
+          showMsg(`⚠️ ${data.error}`, 'warn');
+        } else if (res.ok) {
+          const isUpdate = res.status === 200;
+          showMsg(
+            isUpdate
+              ? `✅ ¡Listo ${name.split(' ')[0]}! Se añadieron los nuevos cursos a tu inscripción existente. Revisa tu correo.`
+              : `🎉 ¡Inscripción recibida, ${name.split(' ')[0]}! Te notificaremos por correo cuando tu acceso sea aprobado.`,
+            'success'
+          );
+          e.target.reset();
+          document.querySelectorAll('.course-card').forEach(c => c.classList.remove('selected'));
+          // Go back to step 1
+          document.getElementById('step-2').style.display = 'none';
+          document.getElementById('step-1').style.display = 'block';
+          document.getElementById('dot2').classList.remove('active');
+          document.getElementById('dot1').classList.add('active');
+        } else {
+          showMsg(`❌ ${data.error || 'Ocurrió un problema. Intenta de nuevo.'}`, 'error');
+        }
+      } catch (err) {
+        showMsg('❌ Error de red. Verifica tu conexión e intenta de nuevo.', 'error');
+      }
+
+      btn.disabled = false;
+      btn.textContent = '✦ Enviar Inscripción';
+    });
+
+    function showMsg(text, type) {
+      const el = document.getElementById('form-msg');
+      el.textContent = text;
+      el.className = `msg-inline show ${type}`;
+      setTimeout(() => el.className = 'msg-inline', 7000);
+    }
+  </script>
+</body>
+</html>

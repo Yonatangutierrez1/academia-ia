@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IA | Acceso</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <!-- Neural network canvas -->
+  <canvas id="neural"></canvas>
+
+  <div class="container">
+    <!-- STUDENT LOGIN VIEW -->
+    <div id="student-login-view" class="card" style="display: none; align-items: center;">
+      <h2 style="font-size: 1.5rem; margin-bottom: 0;">Portal de Estudiantes</h2>
+      <p class="sub" style="margin-top: -0.5rem; text-align: center;">Ingresa con las credenciales proporcionadas.</p>
+      <form id="student-login-form" style="width: 100%; max-width: 300px; display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">
+        <div class="form-group">
+          <label for="student-user">Usuario</label>
+          <input type="text" id="student-user" required placeholder="tu_usuario">
+        </div>
+        <div class="form-group">
+          <label for="student-pass">Contraseña</label>
+          <input type="password" id="student-pass" required placeholder="********">
+        </div>
+        <button type="submit" class="cta" style="width: 100%;">Entrar al Curso</button>
+      </form>
+      <p id="student-login-error" style="color: var(--danger); font-size: 0.85rem; margin-top: 0.5rem; display: none;">Credenciales incorrectas o acceso denegado.</p>
+      <button class="btn-small" onclick="window.location.href='index.html'" style="margin-top: 1rem;">← Volver al sitio</button>
+      <button class="btn-small" onclick="toggleView('admin')" style="margin-top: 0.5rem; border: none; text-decoration: underline;">Soy administrador</button>
+    </div>
+
+    <!-- ADMIN LOGIN VIEW -->
+    <div id="admin-login-view" class="card" style="display: none; align-items: center;">
+      <h2 style="font-size: 1.5rem; margin-bottom: 0;">Acceso Restringido</h2>
+      <p class="sub" style="margin-top: -0.5rem; text-align: center;">Ingresa tus credenciales de administrador.</p>
+      <form id="admin-login-form" style="width: 100%; max-width: 300px; display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">
+        <div class="form-group">
+          <label for="admin-user">Usuario</label>
+          <input type="text" id="admin-user" required placeholder="">
+        </div>
+        <div class="form-group">
+          <label for="admin-pass">Contraseña</label>
+          <input type="password" id="admin-pass" required placeholder="">
+        </div>
+        <button type="submit" class="cta" style="width: 100%;">Ingresar</button>
+      </form>
+      <p id="admin-login-error" style="color: var(--danger); font-size: 0.85rem; margin-top: 0.5rem; display: none;">Credenciales incorrectas.</p>
+      <button class="btn-small" onclick="window.location.href='index.html'" style="margin-top: 1rem;">← Volver al sitio</button>
+      <button class="btn-small" onclick="toggleView('student')" style="margin-top: 0.5rem; border: none; text-decoration: underline;">Soy estudiante</button>
+    </div>
+  </div>
+
+  <footer>
+    <span>© 2026 · Academia de Inteligencia Artificial</span>
+  </footer>
+
+  <script src="js/common.js"></script>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialType = urlParams.get('type') || 'student';
+    
+    const studentView = document.getElementById('student-login-view');
+    const adminView = document.getElementById('admin-login-view');
+    
+    function toggleView(type) {
+      if (type === 'admin') {
+        studentView.style.display = 'none';
+        adminView.style.display = 'flex';
+      } else {
+        adminView.style.display = 'none';
+        studentView.style.display = 'flex';
+      }
+    }
+    
+    toggleView(initialType);
+
+    // Student Login
+    document.getElementById('student-login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const user = document.getElementById('student-user').value;
+      const pass = document.getElementById('student-pass').value;
+      const errorMsg = document.getElementById('student-login-error');
+
+      try {
+        const res = await fetch(`${API_BASE}/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user, pass })
+        });
+
+        if (res.ok) {
+          const student = await res.json();
+          sessionStorage.setItem('currentStudent', JSON.stringify(student));
+          window.location.href = 'dashboard.html';
+        } else {
+          errorMsg.style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Error en login de estudiante:', error);
+        errorMsg.style.display = 'block';
+      }
+    });
+
+    // Admin Login
+    document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const user = document.getElementById('admin-user').value;
+      const pass = document.getElementById('admin-pass').value;
+      const errorMsg = document.getElementById('admin-login-error');
+
+      try {
+        const res = await fetch(`${API_BASE}/admin/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user, pass })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          sessionStorage.setItem('adminLoggedIn', 'true');
+          sessionStorage.setItem('adminToken', data.token);
+          window.location.href = 'admin.html';
+        } else {
+          errorMsg.style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Error en login admin:', error);
+        errorMsg.style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>

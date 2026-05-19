@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Academia IA · Panel Administrativo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <script>
+    if (sessionStorage.getItem('adminLoggedIn') !== 'true') window.location.href = 'login.html?type=admin';
+  </script>
+  <style>
+    body { min-height: 100vh; }
+    .admin-shell { display: flex; min-height: 100vh; position: relative; z-index: 10; }
+    /* Sidebar */
+    .admin-sidebar { width: 240px; flex-shrink: 0; background: rgba(10,15,30,0.7); backdrop-filter: blur(20px); border-right: 1px solid rgba(99,102,241,0.15); display: flex; flex-direction: column; padding: 1.5rem 1rem; }
+    .admin-logo { font-size: 1.1rem; font-weight: 900; color: #fff; letter-spacing: -0.01em; padding: 0.5rem 0.5rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 1.5rem; }
+    .admin-logo span { color: var(--accent); }
+    .admin-nav-item { display: flex; align-items: center; gap: 0.7rem; padding: 0.7rem 0.8rem; border-radius: 0.6rem; color: var(--muted); cursor: pointer; font-size: 0.88rem; font-weight: 500; transition: all 0.2s; }
+    .admin-nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+    .admin-nav-item.active { background: rgba(99,102,241,0.15); color: var(--accent); }
+    .admin-nav-item .nav-icon { font-size: 1rem; }
+    .admin-sidebar-footer { margin-top: auto; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.06); }
+    /* Main */
+    .admin-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .admin-topbar { display: flex; align-items: center; justify-content: space-between; padding: 1.2rem 2rem; background: rgba(10,15,30,0.5); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .admin-topbar-title { font-size: 1.25rem; font-weight: 700; color: #fff; }
+    .admin-topbar-right { display: flex; align-items: center; gap: 1rem; }
+    .admin-content { flex: 1; padding: 2rem; overflow-y: auto; }
+    /* KPI Cards */
+    .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; margin-bottom: 2rem; }
+    .kpi-card { background: rgba(15,23,42,0.6); border: 1px solid rgba(255,255,255,0.07); border-radius: 1rem; padding: 1.5rem; position: relative; overflow: hidden; }
+    .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--accent-line, linear-gradient(90deg, #6366f1, #8b5cf6)); }
+    .kpi-card.green::before { background: linear-gradient(90deg, #10b981, #059669); }
+    .kpi-card.yellow::before { background: linear-gradient(90deg, #f59e0b, #d97706); }
+    .kpi-card.red::before { background: linear-gradient(90deg, #ef4444, #dc2626); }
+    .kpi-label { font-size: 0.75rem; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.75rem; }
+    .kpi-value { font-size: 2.5rem; font-weight: 900; color: #fff; font-family: 'Share Tech Mono', monospace; line-height: 1; }
+    .kpi-sub { font-size: 0.78rem; color: var(--muted); margin-top: 0.4rem; }
+    /* Table Card */
+    .table-card { background: rgba(15,23,42,0.6); border: 1px solid rgba(255,255,255,0.07); border-radius: 1rem; overflow: hidden; }
+    .table-card-header { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .table-card-title { font-size: 1rem; font-weight: 700; color: #fff; }
+    .filter-row { display: flex; gap: 0.5rem; }
+    .filter-btn { padding: 0.35rem 0.9rem; border-radius: 2rem; font-size: 0.78rem; font-weight: 600; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: var(--muted); transition: all 0.2s; }
+    .filter-btn:hover, .filter-btn.active { background: rgba(99,102,241,0.15); color: var(--accent); border-color: rgba(99,102,241,0.4); }
+    .search-bar { padding: 0.4rem 0.9rem; border-radius: 2rem; background: rgba(30,41,59,0.6); border: 1px solid rgba(255,255,255,0.1); color: var(--text); font-size: 0.82rem; outline: none; width: 180px; }
+    .search-bar:focus { border-color: rgba(99,102,241,0.5); }
+    .admin-table { width: 100%; border-collapse: collapse; }
+    .admin-table th { padding: 0.8rem 1rem; text-align: left; font-size: 0.72rem; color: var(--muted); letter-spacing: 0.07em; text-transform: uppercase; background: rgba(30,41,59,0.3); border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .admin-table td { padding: 0.9rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.88rem; vertical-align: middle; }
+    .admin-table tr:last-child td { border-bottom: none; }
+    .admin-table tr { transition: background 0.15s; }
+    .admin-table tr:hover td { background: rgba(99,102,241,0.04); }
+    .status-pill { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.25rem 0.75rem; border-radius: 2rem; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; }
+    .status-pill::before { content: ''; width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .pill-pending { background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.25); }
+    .pill-pending::before { background: #f59e0b; }
+    .pill-accepted { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.25); }
+    .pill-accepted::before { background: #10b981; }
+    .pill-rejected { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.25); }
+    .pill-rejected::before { background: #ef4444; }
+    .action-btn { padding: 0.3rem 0.75rem; border-radius: 0.4rem; font-size: 0.75rem; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; }
+    .action-accept { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+    .action-accept:hover { background: rgba(16,185,129,0.3); }
+    .action-reject { background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
+    .action-reject:hover { background: rgba(239,68,68,0.25); }
+    .creds-badge { font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; background: rgba(34,211,238,0.08); color: #22d3ee; border: 1px solid rgba(34,211,238,0.2); padding: 0.3rem 0.6rem; border-radius: 0.4rem; line-height: 1.6; }
+    .avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; color: #fff; flex-shrink: 0; }
+    .name-cell { display: flex; align-items: center; gap: 0.7rem; }
+    .empty-state { text-align: center; padding: 4rem 2rem; color: var(--muted); }
+    .empty-state .icon { font-size: 3rem; margin-bottom: 1rem; }
+    .toast { position: fixed; bottom: 2rem; right: 2rem; background: rgba(30,41,59,0.95); border: 1px solid rgba(99,102,241,0.3); border-radius: 0.75rem; padding: 1rem 1.5rem; color: var(--text); font-size: 0.88rem; z-index: 999; transform: translateY(100px); opacity: 0; transition: all 0.3s; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    @media (max-width: 1024px) { .kpi-row { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body>
+  <canvas id="neural"></canvas>
+  <div class="admin-shell">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="admin-logo">Academia <span>IA</span></div>
+      <nav style="display:flex; flex-direction:column; gap:0.3rem;">
+        <div class="admin-nav-item active"><span class="nav-icon">📋</span> Inscripciones</div>
+        <div class="admin-nav-item" onclick="logout()"><span class="nav-icon">↩️</span> Cerrar Sesión</div>
+      </nav>
+      <div class="admin-sidebar-footer">
+        <div style="font-size:0.72rem; color:var(--muted); padding: 0 0.5rem;">
+          Panel v2.0 · uniestudiantes.online
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <div class="admin-main">
+      <!-- Topbar -->
+      <div class="admin-topbar">
+        <div class="admin-topbar-title">Panel de Administración</div>
+        <div class="admin-topbar-right">
+          <button class="btn-small btn-danger" id="btn-clear" style="padding:0.4rem 1rem; font-size:0.8rem;">🗑 Limpiar Todo</button>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="admin-content">
+        <!-- KPIs -->
+        <div class="kpi-row">
+          <div class="kpi-card">
+            <div class="kpi-label">Total Inscritos</div>
+            <div class="kpi-value" id="kpi-total">—</div>
+            <div class="kpi-sub">Registros en base de datos</div>
+          </div>
+          <div class="kpi-card yellow">
+            <div class="kpi-label">Pendientes</div>
+            <div class="kpi-value" id="kpi-pending">—</div>
+            <div class="kpi-sub">Esperando aprobación</div>
+          </div>
+          <div class="kpi-card green">
+            <div class="kpi-label">Aceptados</div>
+            <div class="kpi-value" id="kpi-accepted">—</div>
+            <div class="kpi-sub">Con acceso al portal</div>
+          </div>
+          <div class="kpi-card red">
+            <div class="kpi-label">Rechazados</div>
+            <div class="kpi-value" id="kpi-rejected">—</div>
+            <div class="kpi-sub">Solicitudes denegadas</div>
+          </div>
+        </div>
+
+        <!-- Table Card -->
+        <div class="table-card">
+          <div class="table-card-header">
+            <div class="table-card-title">Inscripciones</div>
+            <div style="display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap;">
+              <input type="text" class="search-bar" id="search-input" placeholder="🔍 Buscar por nombre...">
+              <div class="filter-row">
+                <button class="filter-btn active" onclick="filterTable('todos', this)">Todos</button>
+                <button class="filter-btn" onclick="filterTable('Pendiente', this)">Pendientes</button>
+                <button class="filter-btn" onclick="filterTable('Aceptado', this)">Aceptados</button>
+                <button class="filter-btn" onclick="filterTable('Rechazado', this)">Rechazados</button>
+              </div>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Estudiante</th>
+                  <th>Correo</th>
+                  <th>Cursos</th>
+                  <th>Nivel</th>
+                  <th>Estado</th>
+                  <th>Fecha</th>
+                  <th>Acciones / Credenciales</th>
+                </tr>
+              </thead>
+              <tbody id="admin-table-body"></tbody>
+            </table>
+          </div>
+          <div id="empty-state" class="empty-state" style="display:none;">
+            <div class="icon">📭</div>
+            <p>No hay inscripciones todavía.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="js/common.js"></script>
+  <script>
+    // Build the JWT auth header for all admin requests
+    function getAdminHeaders() {
+      return {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + (sessionStorage.getItem('adminToken') || '')
+      };
+    }
+
+    // If server returns 401/403, token expired — force re-login
+    async function adminFetch(url, options = {}) {
+      const res = await fetch(url, { ...options, headers: getAdminHeaders() });
+      if (res.status === 401 || res.status === 403) {
+        sessionStorage.removeItem('adminLoggedIn');
+        sessionStorage.removeItem('adminToken');
+        alert('Tu sesión ha expirado. Por favor inicia sesión de nuevo.');
+        window.location.href = 'login.html?type=admin';
+        return null;
+      }
+      return res;
+    }
+
+    let allData = [];
+    let globalCourses = [];
+    let currentFilter = 'todos';
+    let currentSearch = '';
+
+    async function init() {
+      const [coursesRes] = await Promise.all([
+        fetch(`${API_BASE}/courses`)
+      ]);
+      globalCourses = await coursesRes.json();
+      await refreshData();
+    }
+
+    async function refreshData() {
+      try {
+        const res = await adminFetch(API_URL);
+        if (!res) return;
+        allData = await res.json();
+        updateKPIs();
+        renderTable();
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function updateKPIs() {
+      document.getElementById('kpi-total').textContent = allData.length;
+      document.getElementById('kpi-pending').textContent = allData.filter(d => !d.status || d.status === 'Pendiente').length;
+      document.getElementById('kpi-accepted').textContent = allData.filter(d => d.status === 'Aceptado').length;
+      document.getElementById('kpi-rejected').textContent = allData.filter(d => d.status === 'Rechazado').length;
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('admin-table-body');
+      const empty = document.getElementById('empty-state');
+
+      let filtered = allData;
+      if (currentFilter !== 'todos') {
+        filtered = filtered.filter(d => (d.status || 'Pendiente') === currentFilter);
+      }
+      if (currentSearch) {
+        const q = currentSearch.toLowerCase();
+        filtered = filtered.filter(d => d.name.toLowerCase().includes(q) || d.email.toLowerCase().includes(q));
+      }
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+      }
+      empty.style.display = 'none';
+
+      tbody.innerHTML = filtered.map(item => {
+        const status = item.status || 'Pendiente';
+        const pillClass = status === 'Aceptado' ? 'pill-accepted' : status === 'Rechazado' ? 'pill-rejected' : 'pill-pending';
+        const initials = item.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+
+        const courseList = item.courses || (item.course ? [item.course] : []);
+        const courseTags = courseList.map(cId => {
+          const c = globalCourses.find(x => x.id === cId);
+          return c ? `<span style="display:inline-block; background:rgba(99,102,241,0.1); border:1px solid rgba(99,102,241,0.2); color:var(--accent); padding:0.15rem 0.5rem; border-radius:3px; font-size:0.72rem; margin:1px;">${c.icon} ${c.name}</span>` : cId;
+        }).join(' ');
+
+        let actionCell = '';
+        if (status === 'Pendiente') {
+          actionCell = `
+            <button class="action-btn action-accept" onclick="updateStatus('${item.id}', 'Aceptado')">✓ Aceptar</button>
+            <button class="action-btn action-reject" style="margin-left:0.4rem;" onclick="updateStatus('${item.id}', 'Rechazado')">✗ Rechazar</button>
+          `;
+        } else if (status === 'Aceptado' && item.studentUser) {
+          actionCell = `<div class="creds-badge">👤 ${item.studentUser}<br>🔑 ${item.studentPass}</div>`;
+        } else {
+          actionCell = `<span style="color:var(--muted); font-size:0.8rem;">—</span>`;
+        }
+
+        return `
+          <tr>
+            <td>
+              <div class="name-cell">
+                <div class="avatar">${initials}</div>
+                <div>
+                  <div style="font-weight:600; color:var(--text);">${item.name}</div>
+                  <div style="font-size:0.72rem; color:var(--muted); font-family:'Share Tech Mono',monospace;">#${item.id}</div>
+                </div>
+              </div>
+            </td>
+            <td style="color:var(--muted);">${item.email}</td>
+            <td>${courseTags}</td>
+            <td><span class="badge" style="padding:0.15rem 0.6rem; font-size:0.68rem;">${item.level || '—'}</span></td>
+            <td><span class="status-pill ${pillClass}">${status}</span></td>
+            <td style="color:var(--muted); font-size:0.82rem; white-space:nowrap;">${item.date || '—'}</td>
+            <td>${actionCell}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    window.updateStatus = async function(id, newStatus) {
+      try {
+        const res = await adminFetch(`${API_URL}/${id}`, {
+          method: 'PUT',
+          body: JSON.stringify({ status: newStatus })
+        });
+        if (!res) return;
+        showToast(newStatus === 'Aceptado' ? '✅ Estudiante aceptado. Correo enviado.' : '❌ Solicitud rechazada.');
+        await refreshData();
+      } catch (e) {
+        showToast('Error al actualizar el estado.');
+      }
+    };
+
+    function filterTable(filter, btn) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderTable();
+    }
+
+    document.getElementById('search-input').addEventListener('input', e => {
+      currentSearch = e.target.value;
+      renderTable();
+    });
+
+    document.getElementById('btn-clear').addEventListener('click', async () => {
+      if (confirm('¿Seguro que deseas borrar TODAS las inscripciones? Esta acción no se puede deshacer.')) {
+        const res = await adminFetch(API_URL, { method: 'DELETE' });
+        if (!res) return;
+        showToast('🗑 Todos los registros han sido eliminados.');
+        await refreshData();
+      }
+    });
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3500);
+    }
+
+    init();
+  </script>
+</body>
+</html>
